@@ -4,6 +4,9 @@ const fs = require('fs').promises;
 const path = require('path');
 const validateEmail = require('./middlewares/validateEmail');
 const validatePassword = require('./middlewares/validatePassword');
+const tokenPerson = require('./middlewares/tokenNewPerson');
+const nameNewPerson = require('./middlewares/nameNewPerson');
+const ageNewPerson = require('./middlewares/ageNewPerson');
 
 const app = express();
 app.use(bodyParser.json());
@@ -11,6 +14,7 @@ app.use(express.json());
 
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
+const diretorio = path.resolve(__dirname, './talker.json');
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
@@ -29,7 +33,7 @@ app.get('/talker', async (_req, res) => {
 });
 
 app.get('/talker/:id', async (req, res) => {
-  const pathData = path.resolve(__dirname, './talker.json');
+  const pathData = diretorio;
   const data = JSON.parse(await fs.readFile(pathData, 'utf-8'));
   const idParam = req.params.id;
   const idTalker = data.find(({ id }) => id === Number(idParam));
@@ -48,6 +52,14 @@ app.post('/login', validateEmail, validatePassword, (req, res) => {
   if (email && password) {
     res.status(200).json({ token });
   }
+});
+
+app.post('/talker', nameNewPerson, ageNewPerson, tokenPerson, async (req, res) => {
+  const newPerson = req.body;
+  const data = JSON.parse(await fs.readFile(diretorio, 'utf-8'));
+  data.push(newPerson);
+  await fs.writeFile(diretorio, JSON.stringify(data));
+  res.status(201).json(newPerson);
 });
 
 app.listen(PORT, () => {
