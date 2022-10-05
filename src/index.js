@@ -53,7 +53,6 @@ app.get('/talker/:id', async (req, res) => {
 app.post('/login', validateEmail, validatePassword, (req, res) => {
   const { email, password } = req.body;
   const token = Math.random().toString(4).substring(2, 18);
-  console.log(email);
   if (email && password) {
     res.status(200).json({ token });
   }
@@ -68,6 +67,18 @@ app.post('/talker',
   data.push(dataId);
   await fs.writeFile(diretorio, JSON.stringify(data));
   res.status(201).json(dataId);
+});
+
+app.put('/talker/:id',
+tokenPerson, nameNewPerson, ageNewPerson, validateTalk, 
+validateRate, validateWatched, async (req, res) => {
+  const idParam = req.params.id;
+  const person = { id: Number(idParam), ...req.body };
+  const data = JSON.parse(await fs.readFile(diretorio, 'utf-8'));
+  const index = data.findIndex(({ id }) => id === Number(idParam));
+  data[index] = person;
+  await fs.writeFile(diretorio, JSON.stringify(data));
+  res.status(200).json(person);
 });
 
 app.listen(PORT, () => {

@@ -25,7 +25,7 @@ const validateWatched = (req, res, next) => {
 
 const validateRate = (req, res, next) => {
   const { rate } = req.body.talk;
-  if (!rate) {
+  if (!rate && rate !== 0) {
     return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
   }
 
