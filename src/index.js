@@ -7,6 +7,11 @@ const validatePassword = require('./middlewares/validatePassword');
 const tokenPerson = require('./middlewares/tokenNewPerson');
 const nameNewPerson = require('./middlewares/nameNewPerson');
 const ageNewPerson = require('./middlewares/ageNewPerson');
+const {
+  validateTalk,
+  validateRate,
+  validateWatched,
+} = require('./middlewares/talkNewPerson');
 
 const app = express();
 app.use(bodyParser.json());
@@ -54,12 +59,15 @@ app.post('/login', validateEmail, validatePassword, (req, res) => {
   }
 });
 
-app.post('/talker', nameNewPerson, ageNewPerson, tokenPerson, async (req, res) => {
+app.post('/talker',
+  tokenPerson, nameNewPerson, ageNewPerson, validateTalk, 
+  validateRate, validateWatched, async (req, res) => {
   const newPerson = req.body;
   const data = JSON.parse(await fs.readFile(diretorio, 'utf-8'));
-  data.push(newPerson);
+  const dataId = ({ id: data.length + 1, ...newPerson });
+  data.push(dataId);
   await fs.writeFile(diretorio, JSON.stringify(data));
-  res.status(201).json(newPerson);
+  res.status(201).json(dataId);
 });
 
 app.listen(PORT, () => {
