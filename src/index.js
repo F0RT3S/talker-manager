@@ -26,6 +26,17 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+app.get('/talker/search', tokenPerson, async (req, res) => {
+  const { q } = req.query;
+  const data = JSON.parse(await fs.readFile(diretorio, 'utf-8'));
+  
+  if (q) {
+    const teste = data.filter(({ name }) => name.includes(q));
+    await fs.writeFile(diretorio, JSON.stringify(teste));
+    res.status(200).json(teste);
+  }
+});
+
 app.get('/talker', async (_req, res) => {
   try {
     const pathData = path.resolve(__dirname, './talker.json');
