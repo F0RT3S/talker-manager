@@ -81,6 +81,15 @@ validateRate, validateWatched, async (req, res) => {
   res.status(200).json(person);
 });
 
+app.delete('/talker/:id', tokenPerson, async (req, res) => {
+  const idParam = req.params.id;
+  const data = JSON.parse(await fs.readFile(diretorio, 'utf-8'));
+  const index = data.findIndex(({ id }) => id === Number(idParam));
+  data.splice(index, 1);
+  await fs.writeFile(diretorio, JSON.stringify(data));
+  res.status(204).end();
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
